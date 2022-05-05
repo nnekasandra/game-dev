@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        background: #000;
+        text-align: center;
+      }
+      div {
+        display:flex; width:500px; margin: 30px auto; 
+      }
+      canvas, button, input {
+        background-color: #eee;
+      }
+      input {
+        float:right;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="500" height="400"></canvas>
+    <div>
+      <button id="start">Start</button>
+      <input type="text" id="score" value="0" onfocus="false">
+    </div>
+    <script>
+      var canvas = document.getElementById("myCanvas");
+      var ctx = canvas.getContext("2d");
+      var shouldStop = false, boxRad = 30, canvasWidth = canvas.width, 
+        canvasHeight = canvas.height,
+        startButton = document.getElementById("start"),
+        scoreText = document.getElementById("score")
+
+      function Ball(x, y, player) {
+        this.x = x
+        this.y = y
+        this.dx = 2
+        this.dy = 2
+        this.r = 15
+        this.player = player
+        this.color = "blue"
+        this.draw = function () {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2, true);
+          ctx.fillStyle = this.color;
+          ctx.fill();
+        }
+        this.move = function () {
+          this.x += this.dx
+          this.y += this.dy
+          this.draw()
+        }
+        this.checkBounds = function () {
+          if ((this.x + this.r) >= canvasWidth) {
+            shouldStop = true
+            return
+          } 
+
+          if ((this.x + this.r) >= this.player.x && (this.y + this.r) >= this.player.y && (this.y - this.r) <= (this.player.y + this.player.h)) {
+            if ((this.y + this.r - this.player.y) > this.dy || (this.r + this.player.y + this.player.h - this.y) > this.dy) this.dx *= -1
+            if ((this.x + this.r - this.player.x) > this.dx) this.dy *= -1
+
+            player.updateScore()
+          } else {
+            if ((this.x - this.r) <= 0) this.dx *= -1
+
+            if ((this.y - this.r) <= 0 || (this.y + this.r) >= canvasHeight) this.dy *= -1
+          }
+        }
+      }
+
+      function Player(x, y, w, h) {
+        this.x = x
+        this.y = y
+        this.w = w
+        this.h = h
+        this.dy = 15
+        this.score = 0
+
+        this.draw = function () {
+          ctx.beginPath();
+          ctx.rect(this.x, this.y, this.w, this.h);
+          ctx.fillStyle = "#FF0000";
+          ctx.fill();
+          ctx.closePath();
+        }
+        this.move = function (str) {
+          if ((str == 'up' && this.y <= 0) || (str == 'down' && (this.y + this.h) >= canvasHeight)) return
+
+          if (str == 'up') {
+            this.y -= this.dy
+          } else {
+            this.y += this.dy
+          }
+        }
+        this.updateScore = function () {
+          this.score += 1
+          scoreText.value = this.score+''
+        }
+      }
+
+      function handler(event) {
+        if (event.defaultPrevented) {
+          return
+        }
+
+        switch(event.code) {
+          case "ArrowDown":
+            player.move('down')
+            break
+          case "ArrowUp":
+            player.move('up')
+            break
+          default:
+        }
+
+        event.preventDefault()
+      }
+
+      function reset() {
+        player = new Player(canvasWidth-20, (canvasHeight-100)/2, 20, 150)
+        ball = new Ball(100, canvasHeight/2, player)
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight)
+        scoreText.value = '0'
+        player.draw()
+        ball.draw()
+        window.addEventListener('keydown', handler)
+      }
+
+      function main() {
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight)
+        player.draw()
+        ball.move()
+        ball.checkBounds()
+
+        if (shouldStop) {
+          clearInterval(timer)
+          window.removeEventListener('click', handler)
+          startButton.disabled = false
+          startButton.innerText = 'reset'
+        }
+      }
+      var timer, player, ball
+      reset()
+
+      startButton.onclick = function () {
+        if (shouldStop) {
+          this.innerText = 'start'
+          reset()
+          shouldStop = false
+        } else {
+          timer = setInterval(() => main(), 10)
+          this.disabled = true
+        }
+      }
+    
+    </script>
+  </body>
+</html>
