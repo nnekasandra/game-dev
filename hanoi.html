@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tower of Hanoi</title>
+  </head>
+  <style>
+    #canvas {
+      background-color: #9900bc;
+    }
+    body {
+      background-color: #ccc;
+    }
+  </style>
+  <body>
+    <canvas id="canvas" width="800px" height="500px"></canvas>
+    <div>
+      <button id="start">Start</button>
+      <button id="stop">Stop</button>
+      <input type="text" id="score" value="0" onfocus="false" />
+    </div>
+    <script>
+      var canvas = document.getElementById("canvas");
+      var ctx = canvas.getContext("2d");
+      ctx.beginPath();
+      ctx.rect(20, 20, 10, 100);
+      ctx.fillStyle = "#0095DD";
+      ctx.fill();
+      ctx.closePath();
+      ctx.beginPath();
+      ctx.rect(50, 30, 10, 100);
+      ctx.fillStyle = "#0015DD";
+      ctx.fill();
+      ctx.closePath();
+      ctx.beginPath();
+      ctx.rect(80, 20, 10, 100);
+      ctx.fillStyle = "#0095FD";
+      ctx.fill();
+      ctx.closePath();
+    </script>
+  </body>
+</html>
